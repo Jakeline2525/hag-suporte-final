@@ -1,0 +1,66 @@
+<!-- templates/ticket_detalhes.html -->
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Ticket - {{ ticket.protocolo }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css' ) }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container" style="max-width: 900px;">
+        <a href="{{ url_for('dashboard' ) }}" class="link-voltar" style="margin-bottom: 20px;">&larr; Voltar ao Dashboard</a>
+        <h1>Detalhes do Ticket</h1>
+        <h2>Protocolo: {{ ticket.protocolo }}</h2>
+
+        <div class="ticket-details-grid">
+            <!-- Coluna de Informações -->
+            <div class="ticket-info">
+                <h3>Informações do Cliente</h3>
+                <p><strong>Nome:</strong> {{ ticket.nome_cliente }}</p>
+                <p><strong>E-mail:</strong> {{ ticket.email_cliente }}</p>
+                <p><strong>Setor:</strong> {{ ticket.setor }}</p>
+                <p><strong>Função:</strong> {{ ticket.funcao }}</p>
+                <p><strong>Aberto em:</strong> {{ ticket.data_criacao.strftime('%d/%m/%Y às %H:%M') }}</p>
+                
+                <h3 style="margin-top: 20px;">Descrição do Problema</h3>
+                <p class="descricao-box">{{ ticket.descricao }}</p>
+
+                {% if ticket.anexo %}
+                    <p><strong>Anexo:</strong> <a href="{{ url_for('static', filename='uploads/' + ticket.anexo.split('/')[-1]) }}" target="_blank">Ver Anexo</a></p>
+                {% endif %}
+            </div>
+
+            <!-- Coluna de Ações -->
+            <div class="ticket-actions">
+                <h3>Gerenciar Ticket</h3>
+                <p><strong>Status Atual:</strong> <span class="status status-{{ ticket.status.lower().replace(' ', '-') }}">{{ ticket.status }}</span></p>
+                
+                <form method="POST" action="{{ url_for('atualizar_ticket', protocolo=ticket.protocolo) }}">
+                    <label for="novo_status">Alterar Status</label>
+                    <select name="novo_status" id="novo_status">
+                        <option value="Aguardando Resposta" {% if ticket.status == 'Aguardando Resposta' %}selected{% endif %}>Aguardando Resposta</option>
+                        <option value="Em Andamento" {% if ticket.status == 'Em Andamento' %}selected{% endif %}>Em Andamento</option>
+                        <option value="Aguardando Cliente" {% if ticket.status == 'Aguardando Cliente' %}selected{% endif %}>Aguardando Cliente</o ption>
+                        <option value="Concluído" {% if ticket.status == 'Concluído' %}selected{% endif %}>Concluído</option>
+                    </select>
+
+                    <label for="comentario">Adicionar Comentário (Opcional)</label>
+                    <textarea name="comentario" id="comentario" rows="4" placeholder="Adicione uma observação interna ou uma resposta para o cliente..."></textarea>
+
+                    <button type="submit" style="width: 100%;">Atualizar Ticket</button>
+                </form>
+
+                <a href="{{ url_for('chat', protocolo=ticket.protocolo) }}" class="btn-chat-full">
+                    <i class="fas fa-comments"></i> Abrir Chat com Cliente
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

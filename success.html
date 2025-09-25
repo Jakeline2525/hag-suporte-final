@@ -1,0 +1,26 @@
+<!-- templates/success.html -->
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Enviado com Sucesso!</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container success-container">
+        <h1>Ticket aberto com sucesso!</h1>
+        <p>Sua solicitação foi registrada e uma notificação foi enviada para a equipe de suporte.</p>
+        
+        <p>Guarde o seu número de protocolo:</p>
+        <div class="protocol-box">
+            <p>{{ protocolo }}</p>
+        </div>
+
+          
+
+        <a href="{{ url_for('index') }}">Abrir um novo ticket</a>
+    </div>
+</body>
+</html>
