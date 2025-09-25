@@ -1,4 +1,4 @@
-# app.py (Versão Final e Completa)
+# app.py (Com a correção do TemplateNotFound)
 
 import os
 import smtplib
@@ -14,11 +14,13 @@ from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 
-# Carrega as variáveis de ambiente do arquivo .env
 load_dotenv()
 
-# --- CONFIGURAÇÃO DA APLICAÇÃO ---
-app = Flask(__name__)
+# --- CORREÇÃO APLICADA AQUI ---
+# Dizemos explicitamente ao Flask onde encontrar a pasta de templates.
+app = Flask(__name__, template_folder='templates')
+
+# --- O RESTO DO ARQUIVO CONTINUA IGUAL ---
 app.config['UPLOAD_FOLDER'] = 'uploads/'
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'uma-chave-secreta-padrao-para-desenvolvimento')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///database.db')
@@ -26,17 +28,16 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 db = SQLAlchemy(app)
-# Usamos 'eventlet' para compatibilidade com o deploy
 socketio = SocketIO(app, async_mode='eventlet')
 
-# Configuração do Flask-Login
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 login_manager.login_message = "Por favor, faça login para acessar esta página."
 login_manager.login_message_category = "warning"
 
-
+# ... (O resto do seu código continua aqui, sem nenhuma outra alteração)
+# ... (Cole o restante do seu app.py original aqui)
 # --- MODELOS DO BANCO DE DADOS ---
 class Usuario(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -70,7 +71,6 @@ class Mensagem(db.Model):
 @login_manager.user_loader
 def load_user(user_id):
     return Usuario.query.get(int(user_id))
-
 
 # --- FUNÇÃO DE ENVIO DE E-MAIL ---
 def enviar_email_notificacao(protocolo, email_destinatario, status, dados_ticket=None):
@@ -125,7 +125,6 @@ def enviar_email_notificacao(protocolo, email_destinatario, status, dados_ticket
     except Exception as e:
         print(f"!!!!!!!!!! ERRO AO ENVIAR E-MAIL PARA {email_destinatario} !!!!!!!!!!\nErro: {e}")
 
-
 # --- ROTAS PÚBLICAS ---
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -151,7 +150,6 @@ def index():
 @app.route('/ticket-criado/<protocolo>')
 def ticket_criado(protocolo):
     return render_template('ticket_criado.html', protocolo=protocolo)
-
 
 # --- ROTAS DE AUTENTICAÇÃO ---
 @app.route('/login', methods=['GET', 'POST'])
@@ -198,7 +196,6 @@ def registrar():
         return redirect(url_for('dashboard'))
     return render_template('registrar.html')
 
-
 # --- ROTAS PROTEGIDAS (GERENCIAMENTO) ---
 @app.route('/dashboard')
 @login_required
@@ -238,7 +235,6 @@ def chat(protocolo):
         nome_usuario = session.get('nome_usuario', 'Cliente')
     return render_template('chat.html', protocolo=protocolo, nome_usuario=nome_usuario, historico=ticket.mensagens)
 
-
 # --- EVENTOS DO SOCKET.IO ---
 @socketio.on('join')
 def on_join(data):
@@ -257,14 +253,10 @@ def on_message(data):
         db.session.commit()
     send(data, to=room, broadcast=True)
 
-
 # --- EXECUÇÃO ---
 if __name__ == '__main__':
-    # O 'with app.app_context()' garante que o contexto da aplicação esteja disponível
     with app.app_context():
-        # Cria as tabelas do banco de dados se elas não existirem
         db.create_all()
-        # Cria o primeiro usuário administrador se nenhum usuário existir
         if not Usuario.query.first():
             print("Criando primeiro usuário administrador...")
             admin = Usuario(nome='Admin HAG', email='jakelinesouza@hagmachado.com.br', is_admin=True)
@@ -272,5 +264,4 @@ if __name__ == '__main__':
             db.session.add(admin)
             db.session.commit()
             print("Usuário administrador criado com sucesso.")
-    # Inicia o servidor usando SocketIO
     socketio.run(app, debug=True)
