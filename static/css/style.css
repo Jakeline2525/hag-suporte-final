@@ -1,0 +1,23 @@
+/* static/css/style.css (Versão Final e Completa) */
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap' );
+
+:root {
+    --cor-fundo: #0a0a1a;
+    --cor-ciano: #00e5ff;
+    --cor-ciano-escuro: #00b8d4;
+    --cor-texto: #e0e0e0;
+    --cor-texto-secundario: #a0a0b0;
+    --cor-borda: rgba(0, 229, 255, 0.2);
+    --cor-fundo-card: rgba(20, 20, 40, 0.8);
+    --cor-sucesso: #a3ffb9;
+    --cor-aviso: #ffd700;
+    --cor-perigo: #ff8a80;
+    --fonte-principal: 'Roboto', sans-serif;
+    --fonte-titulo: 'Orbitron', sans-serif;
+}
+
+body {
+    font-family: var(--fonte-principal);
+    background-color: var(--cor-fundo);
+    
