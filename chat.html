@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat - Protocolo {{ protocolo }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css' ) }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h3>Chat de Suporte</h3>
+            <span>Protocolo: {{ protocolo }}</span>
+        </div>
+        <div class="chat-history" id="chat-history">
+            <!-- Mensagens do histórico serão carregadas aqui -->
+            {% for msg in historico %}
+                {% if msg.is_system_message %}
+                    <div class="message system-message">
+                        <span>{{ msg.conteudo }} - <em>por {{ msg.autor }} em {{ msg.data_envio.strftime('%d/%m %H:%M' ) }}</em></span>
+                    </div>
+                {% else %}
+                    <div class="message {% if msg.autor == nome_usuario %}my-message{% else %}other-message{% endif %}">
+                        <strong>{{ msg.autor }}</strong>
+                        <p>{{ msg.conteudo }}</p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="message-input" placeholder="Digite sua mensagem...">
+            <button id="send-button">Enviar</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const socket = io();
+            const room = "{{ protocolo }}";
+            const username = "{{ nome_usuario }}";
+
+            const chatHistory = document.getElementById('chat-history');
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+
+            socket.on('connect', () => {
+                socket.emit('join', { username: username, room: room });
+            });
+
+            socket.on('message', (data) => {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('message');
+
+                if (data.is_system) {
+                    messageDiv.classList.add('system-message');
+                    messageDiv.innerHTML = `<span>${data.msg}</span>`;
+                } else {
+                    if (data.username === username) {
+                        messageDiv.classList.add('my-message');
+                    } else {
+                        messageDiv.classList.add('other-message');
+                    }
+                    messageDiv.innerHTML = `<strong>${data.username}</strong><p>${data.msg}</p>`;
+                }
+                chatHistory.appendChild(messageDiv);
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            });
+
+            const messageInput = document.getElementById('message-input');
+            const sendButton = document.getElementById('send-button');
+
+            function sendMessage() {
+                const message = messageInput.value;
+                if (message.trim() !== '') {
+                    socket.emit('message', { msg: message, username: username, room: room });
+                    messageInput.value = '';
+                }
+            }
+
+            sendButton.addEventListener('click', sendMessage);
+            messageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
