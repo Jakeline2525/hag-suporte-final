@@ -1,0 +1,42 @@
+{% extends 'layout.html' %}
+
+{% block title %}Detalhes do Ticket {{ ticket.protocolo }}{% endblock %}
+
+{% block content %}
+<div class="ticket-details-grid">
+    <div class="ticket-info-card">
+        <h3>Detalhes do Chamado</h3>
+        <p><strong>Protocolo:</strong> {{ ticket.protocolo }}</p>
+        <p><strong>Cliente:</strong> {{ ticket.nome_cliente }} ({{ ticket.email_cliente }})</p>
+        <p><strong>Setor/Função:</strong> {{ ticket.setor }} / {{ ticket.funcao }}</p>
+        <p><strong>Aberto em:</strong> {{ ticket.data_criacao.strftime('%d/%m/%Y %H:%M') }}</p>
+        <p><strong>Status Atual:</strong> <span class="status-badge status-{{ ticket.status.lower().replace(' ', '-') }}">{{ ticket.status }}</span></p>
+        <hr>
+        <h4>Descrição Original:</h4>
+        <p>{{ ticket.descricao }}</p>
+        {% if ticket.anexo %}
+            <p><strong>Anexo:</strong> <a href="{{ url_for('static', filename=ticket.anexo.replace('\\', '/')) }}" target="_blank">Ver Anexo</a></p>
+        {% endif %}
+    </div>
+
+    <div class="ticket-actions-card">
+        <h3>Gerenciar Ticket</h3>
+        <form method="POST" action="{{ url_for('atualizar_ticket', protocolo=ticket.protocolo) }}">
+            <label for="novo_status">Alterar Status:</label>
+            <select name="novo_status">
+                <option value="Aguardando Resposta" {% if ticket.status == 'Aguardando Resposta' %}selected{% endif %}>Aguardando Resposta</option>
+                <option value="Em Andamento" {% if ticket.status == 'Em Andamento' %}selected{% endif %}>Em Andamento</option>
+                <option value="Aguardando Cliente" {% if ticket.status == 'Aguardando Cliente' %}selected{% endif %}>Aguardando Cliente</option>
+                <option value="Concluído" {% if ticket.status == 'Concluído' %}selected{% endif %}>Concluído</option>
+            </select>
+            
+            <label for="comentario">Adicionar Comentário Interno:</label>
+            <textarea name="comentario" placeholder="Adicione uma observação para a equipe..." rows="4"></textarea>
+            
+            <button type="submit" class="btn-submit">Atualizar Ticket</button>
+        </form>
+        <hr>
+        <a href="{{ url_for('chat', protocolo=ticket.protocolo) }}" class="btn-action btn-chat">Entrar no Chat com Cliente</a>
+    </div>
+</div>
+{% endblock %}
