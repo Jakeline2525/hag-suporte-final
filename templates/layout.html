@@ -3,31 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Sistema de Suporte HAG{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Adicionando a fonte Space Grotesk aqui também -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css' ) }}">
+    <title>{% block title %}HAG Suporte{% endblock %}</title>
 </head>
 <body>
-    <header class="main-header">
-        <div class="logo-container">
-            <span>SUPORTE HAG</span>
-        </div>
-        <nav>
-            <a href="{{ url_for('dashboard') }}">Dashboard</a>
-            {% if current_user.is_admin %}
-            <a href="{{ url_for('registrar') }}">Registrar Usuário</a>
-            {% endif %}
-            <a href="{{ url_for('logout') }}">Sair</a>
-        </nav>
-    </header>
-    <main class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        {% block content %}{% endblock %}
-    </main>
+    {% block content %}{% endblock %}
 </body>
 </html>
+
