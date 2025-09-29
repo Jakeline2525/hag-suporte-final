@@ -3,27 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HAG Suporte - Abertura de Ticket</title>
+    <title>HAG Suporte</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Adicionando Font Awesome para os ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body>
-    <div class="form-container">
-        <h1>Abertura de Chamado</h1>
-        <p>Preencha os campos abaixo para abrir um novo ticket de suporte.</p>
-        <form method="POST" enctype="multipart/form-data">
-            <input type="text" name="nome" placeholder="Nome Completo" required>
-            <input type="text" name="setor" placeholder="Seu Setor" required>
-            <input type="text" name="funcao" placeholder="Sua Função" required>
-            <input type="email" name="email" placeholder="Seu E-mail" required>
-            <textarea name="descricao" placeholder="Descrição detalhada do problema" rows="6" required></textarea>
-            <label for="anexo">Anexar Imagem (opcional):</label>
-            <input type="file" name="anexo" accept="image/*" disabled>
-            <small style="display: block; margin-top: -10px; margin-bottom: 15px; color: #a0a0b0;">Upload desativado no plano gratuito.</small>
-            <button type="submit" class="btn-submit">Abrir Ticket</button>
-        </form>
-        <div class="login-link">
-            <a href="{{ url_for('login') }}">Acesso da Equipe</a>
+<body class="portal-body">
+
+    <header class="portal-header">
+        <div class="logo">
+            <i class="fa-solid fa-bolt"></i>HAG
         </div>
-    </div>
+        <nav>
+            <a href="#">FAQ</a>
+            <a href="{{ url_for('abrir_ticket' ) }}">Abrir Ticket</a>
+            <a href="#">Base de Conhecimento</a>
+            <a href="#">Chat ao Vivo</a>
+        </nav>
+    </header>
+
+    <main class="portal-main">
+        <div class="hero-section">
+            <h1>COMO PODEMOS AJUDAR?</h1>
+            <p>Nossa equipe de suporte está aqui para te auxiliar. Por favor, escolha uma das opções abaixo.</p>
+        </div>
+
+        <div class="action-grid">
+            <a href="#" class="action-card">
+                <i class="fa-solid fa-question-circle"></i>
+                <h2>FAQ</h2>
+                <p>Encontre respostas rápidas para as perguntas mais comuns.</p>
+            </a>
+            <a href="{{ url_for('abrir_ticket') }}" class="action-card">
+                <i class="fa-solid fa-file-alt"></i>
+                <h2>Abrir Ticket</h2>
+                <p>Precisa de ajuda? Abra uma solicitação de suporte detalhada.</p>
+            </a>
+            <a href="#" class="action-card">
+                <i class="fa-solid fa-book"></i>
+                <h2>Base de Conhecimento</h2>
+                <p>Explore nossos guias, tutoriais e artigos completos.</p>
+            </a>
+            <a href="#" class="action-card">
+                <i class="fa-solid fa-comments"></i>
+                <h2>Chat ao Vivo</h2>
+                <p>Converse em tempo real com um de nossos agentes de suporte.</p>
+            </a>
+        </div>
+    </main>
+
 </body>
 </html>
