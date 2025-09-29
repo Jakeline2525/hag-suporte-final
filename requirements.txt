@@ -1,0 +1,10 @@
+# requirements.txt
+
+Flask
+Flask-SocketIO
+python-dotenv
+Flask-SQLAlchemy
+Flask-Login
+werkzeug
+gunicorn
+eventlet
