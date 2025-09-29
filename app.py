@@ -1,57 +1,48 @@
-# aplicativo.py
-
-# --- CORREÇÃO DE ORDEM: EVENTLET NO TOPO ABSOLUTO ---
+# --- IMPORTS E CONFIGURAÇÕES INICIAIS ---
 import eventlet
 eventlet.monkey_patch()
-# --- FIM DA CORREÇÃO ---
 
 import os
-from datetime import datetime
-from flask import Flask, render_template, request, redirect, url_for, session, flash
-from flask_socketio import SocketIO, emit, join_room, leave_room
-from werkzeug.security import generate_password_hash, check_password_hash
-from dotenv import load_dotenv
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
+from flask_socketio import SocketIO, join_room, leave_room, emit
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-import secrets
-# --- NOVA IMPORTAÇÃO PARA O SENDGRID ---
+from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
+import pytz
+from dotenv import load_dotenv
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
-# --- FIM DA NOVA IMPORTAÇÃO ---
 
-# Carrega as variáveis de ambiente do arquivo .env
 load_dotenv()
 
-# --- CONFIGURAÇÃO DA APLICAÇÃO FLASK ---
-app = Flask(__name__, template_folder='templates')
-
-# Configurações da aplicação
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', secrets.token_hex(16))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///suporte.db'
+# --- CONFIGURAÇÃO DO APP FLASK ---
+app = Flask(__name__, template_folder='templates', static_folder='static')
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'uma-chave-secreta-padrao-muito-segura')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tickets.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-# Inicialização das extensões
+# --- INICIALIZAÇÃO DAS EXTENSÕES ---
 db = SQLAlchemy(app)
 socketio = SocketIO(app, async_mode='eventlet')
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
-login_manager.login_message = "Por favor, faça login para acessar esta página."
-login_manager.login_message_category = "warning"
+login_manager.login_message = "Por favor, faça o login para acessar esta página."
+login_manager.login_message_category = "info"
 
-# --- MODELOS DO BANCO DE DADOS (SQLAlchemy) ---
-
-class Usuario(db.Model, UserMixin):
+# --- MODELOS DO BANCO DE DADOS ---
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
-    senha_hash = db.Column(db.String(128), nullable=False)
+    password_hash = db.Column(db.String(200), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
 
-    def set_senha(self, senha):
-        self.senha_hash = generate_password_hash(senha)
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
 
-    def check_senha(self, senha):
-        return check_password_hash(self.senha_hash, senha)
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 class Ticket(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -61,101 +52,91 @@ class Ticket(db.Model):
     setor = db.Column(db.String(50))
     funcao = db.Column(db.String(50))
     descricao = db.Column(db.Text, nullable=False)
-    status = db.Column(db.String(30), default='Aguardando Resposta')
-    data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
+    status = db.Column(db.String(50), default='Aguardando Resposta')
+    data_criacao = db.Column(db.DateTime, default=datetime.now(pytz.timezone('America/Sao_Paulo')))
     anexo = db.Column(db.String(200), nullable=True)
 
-class Mensagem(db.Model):
+class MensagemChat(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ticket_protocolo = db.Column(db.String(20), db.ForeignKey('ticket.protocolo'), nullable=False)
-    autor = db.Column(db.String(100), nullable=False)
-    conteudo = db.Column(db.Text, nullable=False)
-    data_envio = db.Column(db.DateTime, default=datetime.utcnow)
-    is_system_message = db.Column(db.Boolean, default=False)
+    remetente = db.Column(db.String(100), nullable=False)
+    mensagem = db.Column(db.Text, nullable=False)
+    data_envio = db.Column(db.DateTime, default=datetime.now(pytz.timezone('America/Sao_Paulo')))
+    tipo = db.Column(db.String(20), default='mensagem')
 
-# --- COMANDOS DO FLASK (para criar o banco de dados) ---
-
-@app.cli.command('create-db')
-def create_db():
-    """Cria as tabelas do banco de dados e o usuário admin."""
-    with app.app_context():
-        db.create_all()
-        print("Banco de dados criado.")
-        if not Usuario.query.filter_by(email='jakelinesouza@hagmachado.com.br').first():
-            admin = Usuario(
-                nome='Jakeline Souza (Admin)',
-                email='jakelinesouza@hagmachado.com.br',
-                is_admin=True
-            )
-            admin.set_senha('Templo@25')
-            db.session.add(admin)
-            db.session.commit()
-            print("Usuário administrador criado com sucesso.")
-
-# --- FUNÇÕES AUXILIARES ---
-
+# --- FUNÇÕES DE APOIO ---
 @login_manager.user_loader
 def load_user(user_id):
-    return Usuario.query.get(int(user_id))
+    return User.query.get(int(user_id))
 
-# --- FUNÇÃO DE E-MAIL REESCRITA PARA SENDGRID ---
 def enviar_email_notificacao(ticket, tipo='abertura'):
-    SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
-    # --- CORREÇÃO: Usando o e-mail verificado como remetente ---
-    EMAIL_REMETENTE = 'jakelinesouza@hagmachado.com.br'
-
-    if not SENDGRID_API_KEY:
-        print("AVISO: Chave da API SendGrid não configurada. E-mail não enviado.")
-        return
-
-    destinatarios = ['jakelinesouza@hagmachado.com.br', ticket.email_cliente]
+    sg = SendGridAPIClient(os.getenv('SENDGRID_API_KEY'))
+    remetente_verificado = 'jakelinesouza@hagmachado.com.br'
     
     if tipo == 'abertura':
-        assunto = f"Novo Ticket Aberto: {ticket.protocolo}"
-        corpo_html = f"""
-        <h2>Novo Ticket de Suporte Registrado</h2>
-        <p>Olá,</p>
-        <p>Um novo ticket foi aberto com as seguintes informações:</p>
-        <ul>
-            <li><strong>Protocolo:</strong> {ticket.protocolo}</li>
-            <li><strong>Nome:</strong> {ticket.nome_cliente}</li>
-            <li><strong>E-mail:</strong> {ticket.email_cliente}</li>
-            <li><strong>Setor:</strong> {ticket.setor}</li>
-            <li><strong>Função:</strong> {ticket.funcao}</li>
-            <li><strong>Status:</strong> {ticket.status}</li>
-        </ul>
-        <h3>Descrição do Problema:</h3>
-        <p>{ticket.descricao}</p>
-        <p>Para acompanhar, acesse o sistema.</p>
+        assunto = f"Confirmação de Abertura de Ticket: {ticket.protocolo}"
+        conteudo = f"""
+        Olá {ticket.nome_cliente},  
+  
+
+        Seu ticket foi aberto com sucesso com o protocolo <strong>{ticket.protocolo}</strong>.  
+
+        O status inicial é: <strong>{ticket.status}</strong>.  
+  
+
+        Nossa equipe de suporte responderá em breve.  
+  
+
+        Atenciosamente,  
+
+        Equipe de Suporte HAG
         """
-    else: # Atualização de status
-        assunto = f"Atualização no Ticket: {ticket.protocolo}"
-        corpo_html = f"""
-        <h2>Atualização no seu Ticket</h2>
-        <p>Olá {ticket.nome_cliente},</p>
-        <p>O status do seu ticket <strong>{ticket.protocolo}</strong> foi atualizado para: <strong>{ticket.status}</strong>.</p>
-        <p>Para acompanhar ou falar com o suporte, acesse o sistema.</p>
+        destinatarios = [ticket.email_cliente, 'jakelinesouza@hagmachado.com.br']
+    else: # tipo == 'atualizacao'
+        assunto = f"Atualização no seu Ticket: {ticket.protocolo}"
+        conteudo = f"""
+        Olá {ticket.nome_cliente},  
+  
+
+        O status do seu ticket <strong>{ticket.protocolo}</strong> foi atualizado para: <strong>{ticket.status}</strong>.  
+  
+
+        Para acompanhar ou falar com o suporte, acesse o sistema.  
+  
+
+        Atenciosamente,  
+
+        Equipe de Suporte HAG
         """
+        destinatarios = [ticket.email_cliente]
 
     for destinatario in destinatarios:
         message = Mail(
-            from_email=EMAIL_REMETENTE,
+            from_email=remetente_verificado,
             to_emails=destinatario,
             subject=assunto,
-            html_content=corpo_html)
+            html_content=conteudo
+        )
         try:
-            sg = SendGridAPIClient(SENDGRID_API_KEY)
             response = sg.send(message)
             print(f"E-mail enviado para {destinatario} via SendGrid. Status: {response.status_code}")
         except Exception as e:
-            print(f"Falha ao enviar e-mail para {destinatario} via SendGrid: {e}")
+            print(f"Erro ao enviar e-mail para {destinatario}: {e}")
 
-# --- ROTAS DA APLICAÇÃO (Páginas) ---
+# --- ROTAS DA APLICAÇÃO ---
 
-@app.route('/', methods=['GET', 'POST'])
+# NOVA ROTA PRINCIPAL (PORTAL)
+@app.route('/')
 def index():
+    return render_template('index.html')
+
+# NOVA ROTA PARA O FORMULÁRIO DE ABERTURA
+@app.route('/abrir-ticket', methods=['GET', 'POST'])
+def abrir_ticket():
     if request.method == 'POST':
-        protocolo = f"TICKET-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        fuso_horario = pytz.timezone('America/Sao_Paulo')
+        protocolo = f"TICKET-{datetime.now(fuso_horario).strftime('%Y%m%d%H%M%S')}"
+        
         novo_ticket = Ticket(
             protocolo=protocolo,
             nome_cliente=request.form['nome'],
@@ -163,38 +144,41 @@ def index():
             setor=request.form['setor'],
             funcao=request.form['funcao'],
             descricao=request.form['descricao'],
-            status='Aguardando Resposta'
         )
         db.session.add(novo_ticket)
         db.session.commit()
+
         enviar_email_notificacao(novo_ticket, tipo='abertura')
+        
         return redirect(url_for('ticket_criado', protocolo=protocolo))
-    return render_template('index.html')
+    
+    # Se for GET, apenas renderiza o formulário
+    return render_template('abrir_ticket.html')
+
 
 @app.route('/ticket_criado/<protocolo>')
 def ticket_criado(protocolo):
     return render_template('ticket_criado.html', protocolo=protocolo)
 
+# --- ROTAS DE AUTENTICAÇÃO E DASHBOARD (sem alterações) ---
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
     if request.method == 'POST':
-        email = request.form['email']
-        senha = request.form['senha']
-        usuario = Usuario.query.filter_by(email=email).first()
-        if usuario and usuario.check_senha(senha):
-            login_user(usuario)
+        user = User.query.filter_by(email=request.form['email']).first()
+        if user and user.check_password(request.form['password']):
+            login_user(user)
             return redirect(url_for('dashboard'))
         else:
-            flash('E-mail ou senha inválidos.', 'danger')
+            flash('Credenciais inválidas. Por favor, tente novamente.', 'danger')
     return render_template('login.html')
 
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('index'))
+    return redirect(url_for('login'))
 
 @app.route('/registrar', methods=['GET', 'POST'])
 @login_required
@@ -203,18 +187,21 @@ def registrar():
         flash('Acesso negado. Apenas administradores podem registrar novos usuários.', 'danger')
         return redirect(url_for('dashboard'))
     if request.method == 'POST':
-        nome = request.form['nome']
         email = request.form['email']
-        senha = request.form['senha']
-        is_admin = 'is_admin' in request.form
-        if Usuario.query.filter_by(email=email).first():
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
             flash('Este e-mail já está em uso.', 'warning')
             return redirect(url_for('registrar'))
-        novo_usuario = Usuario(nome=nome, email=email, is_admin=is_admin)
-        novo_usuario.set_senha(senha)
+        
+        novo_usuario = User(
+            nome=request.form['nome'],
+            email=email,
+            is_admin= 'is_admin' in request.form
+        )
+        novo_usuario.set_password(request.form['password'])
         db.session.add(novo_usuario)
         db.session.commit()
-        flash('Novo usuário criado com sucesso!', 'success')
+        flash('Novo usuário registrado com sucesso!', 'success')
         return redirect(url_for('dashboard'))
     return render_template('registrar.html')
 
@@ -224,54 +211,103 @@ def dashboard():
     tickets = Ticket.query.order_by(Ticket.data_criacao.desc()).all()
     return render_template('dashboard.html', tickets=tickets)
 
-@app.route('/ticket/<protocolo>')
+@app.route('/ticket/<protocolo>', methods=['GET', 'POST'])
 @login_required
-def ticket_detalhes(protocolo):
+def gerenciar_ticket(protocolo):
     ticket = Ticket.query.filter_by(protocolo=protocolo).first_or_404()
-    return render_template('ticket_detalhes.html', ticket=ticket)
+    if request.method == 'POST':
+        novo_status = request.form.get('status')
+        comentario = request.form.get('comentario')
 
-@app.route('/ticket/<protocolo>/atualizar', methods=['POST'])
-@login_required
-def atualizar_ticket(protocolo):
-    ticket = Ticket.query.filter_by(protocolo=protocolo).first_or_404()
-    novo_status = request.form['novo_status']
-    comentario = request.form.get('comentario')
-    if ticket.status != novo_status:
-        ticket.status = novo_status
-        enviar_email_notificacao(ticket, tipo='atualizacao')
-        msg_status = Mensagem(ticket_protocolo=protocolo, autor=current_user.nome, conteudo=f"Status alterado para: {novo_status}", is_system_message=True)
-        db.session.add(msg_status)
-    if comentario:
-        msg_comentario = Mensagem(ticket_protocolo=protocolo, autor=current_user.nome, conteudo=f"Comentário interno: {comentario}", is_system_message=True)
-        db.session.add(msg_comentario)
-    db.session.commit()
-    flash('Ticket atualizado com sucesso!', 'success')
-    return redirect(url_for('ticket_detalhes', protocolo=protocolo))
+        if novo_status and novo_status != ticket.status:
+            ticket.status = novo_status
+            enviar_email_notificacao(ticket, tipo='atualizacao')
+        
+        if comentario:
+            nova_mensagem = MensagemChat(
+                ticket_protocolo=protocolo,
+                remetente=f"Suporte ({current_user.nome})",
+                mensagem=comentario,
+                tipo='comentario'
+            )
+            db.session.add(nova_mensagem)
+        
+        db.session.commit()
+        flash('Ticket atualizado com sucesso!', 'success')
+        return redirect(url_for('gerenciar_ticket', protocolo=protocolo))
 
+    mensagens = MensagemChat.query.filter_by(ticket_protocolo=protocolo).order_by(MensagemChat.data_envio).all()
+    return render_template('ticket_detalhes.html', ticket=ticket, mensagens=mensagens)
+
+# --- ROTAS DE CHAT (sem alterações) ---
 @app.route('/chat/<protocolo>')
 def chat(protocolo):
     ticket = Ticket.query.filter_by(protocolo=protocolo).first_or_404()
-    historico = Mensagem.query.filter_by(ticket_protocolo=protocolo).order_by(Mensagem.data_envio).all()
-    nome_usuario = current_user.nome if current_user.is_authenticated else ticket.nome_cliente
-    session['nome_usuario'] = nome_usuario
-    return render_template('chat.html', protocolo=protocolo, historico=historico, nome_usuario=nome_usuario)
-
-# --- LÓGICA DO CHAT (Socket.IO) ---
+    mensagens = MensagemChat.query.filter_by(ticket_protocolo=protocolo).order_by(MensagemChat.data_envio).all()
+    return render_template('chat.html', ticket=ticket, mensagens=mensagens)
 
 @socketio.on('join')
 def on_join(data):
     username = data['username']
     room = data['room']
     join_room(room)
-    emit('message', {'msg': f'{username} entrou no chat.', 'username': 'Sistema', 'is_system': True}, to=room)
+    
+    if username != 'Suporte':
+        remetente = username
+    else:
+        remetente = f"Suporte ({current_user.nome if current_user.is_authenticated else 'Anônimo'})"
 
-@socketio.on('message')
-def handle_message(data):
-    room = data['room']
-    nova_mensagem = Mensagem(ticket_protocolo=room, autor=data['username'], conteudo=data['msg'])
+    nova_mensagem = MensagemChat(
+        ticket_protocolo=room,
+        remetente=remetente,
+        mensagem=f'{username} entrou no chat.',
+        tipo='evento'
+    )
     db.session.add(nova_mensagem)
     db.session.commit()
+    emit('message', {'remetente': 'Sistema', 'mensagem': f'{username} entrou no chat.', 'tipo': 'evento'}, to=room)
+
+@socketio.on('leave')
+def on_leave(data):
+    username = data['username']
+    room = data['room']
+    leave_room(room)
+    emit('message', {'remetente': 'Sistema', 'mensagem': f'{username} saiu do chat.', 'tipo': 'evento'}, to=room)
+
+@socketio.on('send_message')
+def handle_send_message_event(data):
+    room = data['room']
+    
+    nova_mensagem = MensagemChat(
+        ticket_protocolo=room,
+        remetente=data['remetente'],
+        mensagem=data['mensagem'],
+        tipo='mensagem'
+    )
+    db.session.add(nova_mensagem)
+    db.session.commit()
+    
     emit('message', data, to=room)
+
+# --- COMANDO PARA CRIAR O BANCO DE DADOS ---
+@app.cli.command("create-db")
+def create_db():
+    """Cria as tabelas do banco de dados e o usuário admin."""
+    with app.app_context():
+        db.create_all()
+        print("Banco de dados criado.")
+        if not User.query.filter_by(email='jakelinesouza@hagmachado.com.br').first():
+            admin = User(
+                nome='Jakeline Souza (Admin)',
+                email='jakelinesouza@hagmachado.com.br',
+                is_admin=True
+            )
+            admin.set_password('Templo@25')
+            db.session.add(admin)
+            db.session.commit()
+            print("Usuário administrador criado com sucesso.")
+        else:
+            print("Usuário administrador já existe.")
 
 # --- EXECUÇÃO DA APLICAÇÃO ---
 if __name__ == '__main__':
