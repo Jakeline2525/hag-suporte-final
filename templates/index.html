@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HAG Suporte - Abertura de Ticket</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="form-container">
+        <h1>Abertura de Chamado</h1>
+        <p>Preencha os campos abaixo para abrir um novo ticket de suporte.</p>
+        <form method="POST" enctype="multipart/form-data">
+            <input type="text" name="nome" placeholder="Nome Completo" required>
+            <input type="text" name="setor" placeholder="Seu Setor" required>
+            <input type="text" name="funcao" placeholder="Sua Função" required>
+            <input type="email" name="email" placeholder="Seu E-mail" required>
+            <textarea name="descricao" placeholder="Descrição detalhada do problema" rows="6" required></textarea>
+            <label for="anexo">Anexar Imagem (opcional):</label>
+            <input type="file" name="anexo" accept="image/*" disabled>
+            <small style="display: block; margin-top: -10px; margin-bottom: 15px; color: #a0a0b0;">Upload desativado no plano gratuito.</small>
+            <button type="submit" class="btn-submit">Abrir Ticket</button>
+        </form>
+        <div class="login-link">
+            <a href="{{ url_for('login') }}">Acesso da Equipe</a>
+        </div>
+    </div>
+</body>
+</html>
