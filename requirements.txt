@@ -1,8 +1,9 @@
 Flask
 Flask-SocketIO
-python-dotenv
 Flask-SQLAlchemy
 Flask-Login
-werkzeug
+python-dotenv
 gunicorn
 eventlet
+sendgrid  # <-- ADICIONE ESTA LINHA
+
