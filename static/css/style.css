@@ -1,141 +1,133 @@
-/* static/css/style.css (Adicionar no final do arquivo) */
-
-/* --- ESTILOS DO NOVO PORTAL --- */
+/* --- ESTILOS DO NOVO PORTAL (VERSÃO FINAL) --- */
 
 .portal-body {
-    background: #0a0a1a; /* Fundo escuro principal */
-    color: #e0e0e0;
+    /* Aplicando a nova fonte como padrão */
+    font-family: 'Space Grotesk', sans-serif;
+    background: #050810; /* Fundo escuro mais próximo da referência */
+    color: #b0c4de; /* Cor de texto padrão mais suave */
     line-height: 1.6;
     overflow-x: hidden;
+    /* Efeito de gradiente e linhas de luz no fundo */
     background-image: 
-        radial-gradient(circle at 15% 50%, rgba(0, 229, 255, 0.1), transparent 30%),
-        radial-gradient(circle at 85% 30%, rgba(128, 0, 128, 0.1), transparent 40%);
+        radial-gradient(circle at 15% 50%, rgba(0, 229, 255, 0.1), transparent 25%),
+        radial-gradient(circle at 85% 40%, rgba(80, 0, 150, 0.1), transparent 30%),
+        linear-gradient(160deg, transparent, rgba(0, 229, 255, 0.05) 80%),
+        linear-gradient(340deg, transparent, rgba(80, 0, 150, 0.05) 80%);
 }
 
 .portal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 5%;
-    background: rgba(10, 10, 26, 0.5);
-    backdrop-filter: blur(5px);
-    border-bottom: 1px solid rgba(0, 229, 255, 0.2);
+    padding: 25px 6%;
+    background: transparent; /* Remove o fundo do header para um look mais integrado */
+    border-bottom: none; /* Remove a borda */
     position: sticky;
     top: 0;
     z-index: 1000;
 }
 
 .portal-header .logo {
-    font-family: var(--fonte-titulo);
-    font-size: 1.8em;
+    font-size: 1.7em;
     font-weight: 700;
-    color: var(--cor-ciano);
-    text-shadow: 0 0 10px var(--cor-ciano);
+    color: #ffffff; /* Logo branco para maior contraste */
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Espaço entre o robô e o texto */
 }
 
 .portal-header .logo i {
-    margin-right: 8px;
+    color: var(--cor-ciano); /* Ícone do robô na cor ciano */
+    font-size: 1.2em; /* Ajusta o tamanho do robô */
 }
 
 .portal-header nav a {
-    color: #e0e0e0;
+    color: #b0c4de;
     text-decoration: none;
-    margin-left: 25px;
+    margin-left: 35px;
     font-size: 1em;
     font-weight: 500;
     transition: color 0.3s, text-shadow 0.3s;
 }
 
 .portal-header nav a:hover {
-    color: var(--cor-ciano);
-    text-shadow: 0 0 8px var(--cor-ciano);
+    color: #ffffff;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
 }
 
 .portal-main {
-    padding: 50px 5%;
+    padding: 60px 5%;
     text-align: center;
 }
 
 .hero-section h1 {
-    font-family: var(--fonte-titulo);
-    font-size: 3.5em;
-    color: #fff;
-    text-shadow: 0 0 15px rgba(0, 229, 255, 0.7);
-    margin-bottom: 10px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 3.8em; /* Tamanho mais próximo da referência */
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
+    margin-bottom: 15px;
+    letter-spacing: -1px;
 }
 
 .hero-section p {
-    font-size: 1.2em;
-    max-width: 600px;
-    margin: 0 auto 50px auto;
-    color: var(--cor-texto-secundario);
+    font-size: 1.1em;
+    max-width: 650px;
+    margin: 0 auto 60px auto;
+    color: #b0c4de;
 }
 
 .action-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 25px;
-    max-width: 1200px;
+    max-width: 1100px;
     margin: 0 auto;
 }
 
 .action-card {
-    background: rgba(20, 20, 40, 0.6);
-    border: 1px solid var(--cor-borda);
-    border-radius: 15px;
-    padding: 30px;
+    background: rgba(15, 23, 42, 0.5); /* Fundo do card mais sutil */
+    border: 1px solid rgba(0, 229, 255, 0.2);
+    border-radius: 12px;
+    padding: 35px 25px;
     text-align: center;
     text-decoration: none;
-    color: #e0e0e0;
-    backdrop-filter: blur(10px);
+    color: #b0c4de;
+    backdrop-filter: blur(8px);
     transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
     position: relative;
     overflow: hidden;
 }
 
-.action-card:before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(0, 229, 255, 0.2), transparent 40%);
-    transform: scale(0);
-    transition: transform 0.5s;
-    z-index: 0;
-}
-
 .action-card:hover {
-    transform: translateY(-10px);
-    border-color: var(--cor-ciano);
-    box-shadow: 0 10px 30px rgba(0, 229, 255, 0.2);
-}
-
-.action-card:hover:before {
-    transform: scale(1);
-}
-
-.action-card i, .action-card h2, .action-card p {
-    position: relative;
-    z-index: 1;
+    transform: translateY(-8px);
+    border-color: rgba(0, 229, 255, 0.7);
+    box-shadow: 0 8px 40px rgba(0, 229, 255, 0.15);
 }
 
 .action-card i {
-    font-size: 3em;
+    font-size: 2.8em;
     color: var(--cor-ciano);
-    margin-bottom: 20px;
-    text-shadow: 0 0 15px var(--cor-ciano);
+    margin-bottom: 25px;
+    display: inline-block;
+    transition: transform 0.3s;
+}
+
+.action-card:hover i {
+    transform: scale(1.1);
 }
 
 .action-card h2 {
-    font-family: var(--fonte-titulo);
-    font-size: 1.5em;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.4em;
+    font-weight: 700;
     margin-bottom: 10px;
-    color: #fff;
+    color: #ffffff;
 }
 
 .action-card p {
-    font-size: 0.9em;
-    color: var(--cor-texto-secundario);
+    font-size: 0.95em;
+    color: #b0c4de;
+    line-height: 1.5;
 }
