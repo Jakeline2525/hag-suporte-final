@@ -5,6 +5,7 @@ Flask-Login
 python-dotenv
 gunicorn
 eventlet
-sendgrid  
+sendgrid
+pytz
 
 
