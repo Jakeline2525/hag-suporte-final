@@ -1,12 +1,9 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HAG Suporte - Abrir Ticket</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
+{% extends "layout.html" %}
+
+{% block title %}Abrir Chamado - HAG Suporte{% endblock %}
+
+{% block content %}
+<body class="form-page-body">
     <div class="form-container">
         <h1>Abertura de Chamado</h1>
         <p>Preencha os campos abaixo para abrir um novo ticket de suporte.</p>
@@ -42,4 +39,6 @@
         </div>
     </div>
 </body>
-</html>
+{% endblock %}
+
+
