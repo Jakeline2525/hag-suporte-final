@@ -4,53 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HAG Suporte</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- Importando as fontes do Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+
     <!-- Adicionando Font Awesome para os ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css' ) }}">
 </head>
 <body class="portal-body">
 
     <header class="portal-header">
         <div class="logo">
-            <i class="fa-solid fa-bolt"></i>HAG
+            <!-- Ícone do raio trocado pelo robô -->
+            <i class="fa-solid fa-robot"></i>HAG
         </div>
         <nav>
             <a href="#">FAQ</a>
-            <a href="{{ url_for('abrir_ticket' ) }}">Abrir Ticket</a>
-            <a href="#">Base de Conhecimento</a>
-            <a href="#">Chat ao Vivo</a>
+            <a href="{{ url_for('abrir_ticket') }}">Open Ticket</a>
+            <a href="#">Knowledge Base</a>
+            <a href="#">Live Chat</a>
         </nav>
     </header>
 
     <main class="portal-main">
         <div class="hero-section">
-            <h1>COMO PODEMOS AJUDAR?</h1>
-            <p>Nossa equipe de suporte está aqui para te auxiliar. Por favor, escolha uma das opções abaixo.</p>
+            <h1>HOW CAN WE HELP?</h1>
+            <p>Our support team is here to help you. Please choose from the options below to find the help you need.</p>
         </div>
 
         <div class="action-grid">
             <a href="#" class="action-card">
                 <i class="fa-solid fa-question-circle"></i>
                 <h2>FAQ</h2>
-                <p>Encontre respostas rápidas para as perguntas mais comuns.</p>
+                <p>Find answers to most common questions.</p>
             </a>
             <a href="{{ url_for('abrir_ticket') }}" class="action-card">
                 <i class="fa-solid fa-file-alt"></i>
-                <h2>Abrir Ticket</h2>
-                <p>Precisa de ajuda? Abra uma solicitação de suporte detalhada.</p>
+                <h2>Open Ticket</h2>
+                <p>Open a detailed support request.</p>
             </a>
             <a href="#" class="action-card">
                 <i class="fa-solid fa-book"></i>
-                <h2>Base de Conhecimento</h2>
-                <p>Explore nossos guias, tutoriais e artigos completos.</p>
+                <h2>Knowledge Base</h2>
+                <p>Explore our guides and tutorials.</p>
             </a>
             <a href="#" class="action-card">
                 <i class="fa-solid fa-comments"></i>
-                <h2>Chat ao Vivo</h2>
-                <p>Converse em tempo real com um de nossos agentes de suporte.</p>
+                <h2>Live Chat</h2>
+                <p>Chat in real-time with a support agent.</p>
             </a>
         </div>
     </main>
 
 </body>
 </html>
+
