@@ -1,18 +1,253 @@
+/* --- VARIÁVEIS GLOBAIS E RESET BÁSICO --- */
+:root {
+    --cor-fundo: #0a0a1a;
+    --cor-fundo-container: rgba(10, 10, 30, 0.7);
+    --cor-ciano: #00e5ff;
+    --cor-texto-principal: #e0e0e0;
+    --cor-texto-secundario: #a0a0b0;
+    --cor-borda: rgba(0, 229, 255, 0.2);
+    --cor-fundo-card: rgba(20, 20, 40, 0.8);
+    --cor-sucesso: #a3ffb9;
+    --cor-aviso: #ffd700;
+    --cor-perigo: #ff8a80;
+    /* Fontes do novo design */
+    --fonte-principal: 'Space Grotesk', sans-serif;
+    --fonte-titulo: 'Space Grotesk', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--fonte-principal);
+    background-color: var(--cor-fundo);
+    color: var(--cor-texto-principal);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* --- ESTILOS DO FORMULÁRIO E PÁGINAS INTERNAS --- */
+.form-container, .success-container, .login-container, .dashboard-container, .ticket-details-container, .chat-container {
+    background-color: var(--cor-fundo-container);
+    padding: 40px;
+    border-radius: 15px;
+    border: 1px solid var(--cor-borda);
+    width: 100%;
+    max-width: 600px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 30px rgba(0, 229, 255, 0.1);
+}
+
+h1 {
+    font-family: var(--fonte-titulo);
+    color: var(--cor-ciano);
+    text-align: center;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+p {
+    text-align: center;
+    color: var(--cor-texto-secundario);
+    margin-bottom: 30px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 1px solid var(--cor-borda);
+    background-color: rgba(0, 0, 0, 0.3);
+    color: var(--cor-texto-principal);
+    font-family: var(--fonte-principal);
+    font-size: 1em;
+}
+
+input::placeholder, textarea::placeholder {
+    color: var(--cor-texto-secundario);
+}
+
+.btn-submit, .btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--cor-ciano);
+    color: var(--cor-fundo);
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    font-family: var(--fonte-titulo);
+}
+
+.btn-submit:hover, .btn:hover {
+    background-color: #00c4ff;
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
+}
+
+.login-link, .back-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.login-link a, .back-link a {
+    color: var(--cor-ciano);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* --- ESTILOS DO DASHBOARD E DETALHES DO TICKET --- */
+.dashboard-container, .ticket-details-container {
+    max-width: 1200px;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.ticket-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.ticket-table th, .ticket-table td {
+    padding: 15px;
+    border-bottom: 1px solid var(--cor-borda);
+}
+
+.ticket-table th {
+    color: var(--cor-ciano);
+    font-family: var(--fonte-titulo);
+}
+
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: bold;
+    color: #000;
+}
+
+.status-aguardando-resposta { background-color: var(--cor-aviso); }
+.status-em-andamento { background-color: #87CEEB; }
+.status-aguardando-cliente { background-color: #FFA07A; }
+.status-concluido { background-color: var(--cor-sucesso); }
+
+.btn-manage {
+    padding: 8px 15px;
+    background-color: var(--cor-ciano);
+    color: var(--cor-fundo);
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+.btn-manage:hover { background-color: #00c4ff; }
+
+/* --- ESTILOS DO CHAT --- */
+.chat-container {
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+}
+
+.chat-history {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    border-bottom: 1px solid var(--cor-borda);
+    margin-bottom: 20px;
+}
+
+.chat-input {
+    display: flex;
+    gap: 10px;
+}
+
+#message-input {
+    flex-grow: 1;
+}
+
+#send-button {
+    width: auto;
+    padding: 0 25px;
+}
+
+.message {
+    padding: 10px 15px;
+    border-radius: 15px;
+    max-width: 70%;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.my-message {
+    background-color: var(--cor-ciano);
+    color: var(--cor-fundo);
+    align-self: flex-end;
+    border-bottom-right-radius: 5px;
+}
+
+.other-message {
+    background-color: #2a2a4a;
+    align-self: flex-start;
+    border-bottom-left-radius: 5px;
+}
+
+.message strong {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+    color: var(--cor-texto-secundario);
+}
+
+.my-message strong {
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.message p {
+    margin: 0;
+    text-align: left;
+}
+
 /* --- ESTILOS DO NOVO PORTAL (VERSÃO FINAL) --- */
 
 .portal-body {
-    /* Aplicando a nova fonte como padrão */
     font-family: 'Space Grotesk', sans-serif;
-    background: #050810; /* Fundo escuro mais próximo da referência */
-    color: #b0c4de; /* Cor de texto padrão mais suave */
+    background: #050810;
+    color: #b0c4de;
     line-height: 1.6;
     overflow-x: hidden;
-    /* Efeito de gradiente e linhas de luz no fundo */
     background-image: 
         radial-gradient(circle at 15% 50%, rgba(0, 229, 255, 0.1), transparent 25%),
         radial-gradient(circle at 85% 40%, rgba(80, 0, 150, 0.1), transparent 30%),
         linear-gradient(160deg, transparent, rgba(0, 229, 255, 0.05) 80%),
         linear-gradient(340deg, transparent, rgba(80, 0, 150, 0.05) 80%);
+    display: block; /* Sobrescreve o flexbox padrão para o portal */
 }
 
 .portal-header {
@@ -20,8 +255,8 @@
     justify-content: space-between;
     align-items: center;
     padding: 25px 6%;
-    background: transparent; /* Remove o fundo do header para um look mais integrado */
-    border-bottom: none; /* Remove a borda */
+    background: transparent;
+    border-bottom: none;
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -30,16 +265,16 @@
 .portal-header .logo {
     font-size: 1.7em;
     font-weight: 700;
-    color: #ffffff; /* Logo branco para maior contraste */
+    color: #ffffff;
     letter-spacing: 1px;
     display: flex;
     align-items: center;
-    gap: 10px; /* Espaço entre o robô e o texto */
+    gap: 10px;
 }
 
 .portal-header .logo i {
-    color: var(--cor-ciano); /* Ícone do robô na cor ciano */
-    font-size: 1.2em; /* Ajusta o tamanho do robô */
+    color: var(--cor-ciano);
+    font-size: 1.2em;
 }
 
 .portal-header nav a {
@@ -63,7 +298,7 @@
 
 .hero-section h1 {
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 3.8em; /* Tamanho mais próximo da referência */
+    font-size: 3.8em;
     font-weight: 700;
     color: #ffffff;
     text-shadow: 0 0 20px rgba(0, 229, 255, 0.5);
@@ -87,7 +322,7 @@
 }
 
 .action-card {
-    background: rgba(15, 23, 42, 0.5); /* Fundo do card mais sutil */
+    background: rgba(15, 23, 42, 0.5);
     border: 1px solid rgba(0, 229, 255, 0.2);
     border-radius: 12px;
     padding: 35px 25px;
@@ -131,8 +366,8 @@
     color: #b0c4de;
     line-height: 1.5;
 }
-/* Adicionar ao final do static/css/style.css */
 
+/* Estilo para o corpo das páginas de formulário */
 .form-page-body {
     background: #050810;
     display: flex;
@@ -140,3 +375,5 @@
     justify-content: center;
     min-height: 100vh;
 }
+
+
