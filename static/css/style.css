@@ -1,420 +1,141 @@
-/* static/css/style.css (Versão Final - Gratuita) */
+/* static/css/style.css (Adicionar no final do arquivo) */
 
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap' );
+/* --- ESTILOS DO NOVO PORTAL --- */
 
-:root {
-    --cor-fundo: #0a0a1a;
-    --cor-ciano: #00e5ff;
-    --cor-ciano-escuro: #00b8d4;
-    --cor-texto: #e0e0e0;
-    --cor-texto-secundario: #a0a0b0;
-    --cor-borda: rgba(0, 229, 255, 0.2);
-    --cor-fundo-card: rgba(20, 20, 40, 0.8);
-    --cor-sucesso: #a3ffb9;
-    --cor-aviso: #ffd700;
-    --cor-perigo: #ff8a80;
-    --fonte-principal: 'Roboto', sans-serif;
-    --fonte-titulo: 'Orbitron', sans-serif;
+.portal-body {
+    background: #0a0a1a; /* Fundo escuro principal */
+    color: #e0e0e0;
+    line-height: 1.6;
+    overflow-x: hidden;
+    background-image: 
+        radial-gradient(circle at 15% 50%, rgba(0, 229, 255, 0.1), transparent 30%),
+        radial-gradient(circle at 85% 30%, rgba(128, 0, 128, 0.1), transparent 40%);
 }
 
-body {
-    font-family: var(--fonte-principal);
-    background-color: var(--cor-fundo);
-    color: var(--cor-texto);
-    margin: 0;
-    padding: 20px;
-    /* Imagem de fundo desativada para o plano gratuito */
-    /* 
-    background-image: url('../img/fundo.jpg');
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-}
-
-.container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-/* --- Estilos do Formulário Principal e Login --- */
-.form-container {
-    background-color: var(--cor-fundo-card);
-    padding: 30px 40px;
-    border-radius: 10px;
-    border: 1px solid var(--cor-borda);
-    box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
-    width: 100%;
-    max-width: 500px;
-    backdrop-filter: blur(10px);
-}
-
-.form-container h1, .form-container h2 {
-    font-family: var(--fonte-titulo);
-    color: var(--cor-ciano);
-    text-align: center;
-    margin-bottom: 10px;
-}
-
-.form-container p {
-    text-align: center;
-    color: var(--cor-texto-secundario);
-    margin-bottom: 30px;
-}
-
-.form-container input[type="text"],
-.form-container input[type="email"],
-.form-container input[type="password"],
-.form-container textarea {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    background-color: rgba(0, 0, 0, 0.3);
-    border: 1px solid var(--cor-borda);
-    border-radius: 5px;
-    color: var(--cor-texto);
-    font-family: var(--fonte-principal);
-    box-sizing: border-box;
-}
-
-.form-container input::placeholder,
-.form-container textarea::placeholder {
-    color: var(--cor-texto-secundario);
-}
-
-.form-container label {
-    display: block;
-    margin-bottom: 10px;
-    color: var(--cor-ciano);
-}
-
-.form-container input[type="file"] {
-    color: var(--cor-texto-secundario);
-    border: none;
-    padding: 10px 0;
-}
-
-.btn-submit {
-    width: 100%;
-    padding: 15px;
-    background-color: var(--cor-ciano);
-    color: var(--cor-fundo);
-    border: none;
-    border-radius: 5px;
-    font-family: var(--fonte-titulo);
-    font-size: 1.1em;
-    cursor: pointer;
-    transition: background-color 0.3s, box-shadow 0.3s;
-}
-
-.btn-submit:hover {
-    background-color: var(--cor-ciano-escuro);
-    box-shadow: 0 0 15px var(--cor-ciano-escuro);
-}
-
-.login-link {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.login-link a {
-    color: var(--cor-ciano);
-    text-decoration: none;
-}
-
-/* --- Página de Sucesso (Ticket Criado) --- */
-.protocol-box {
-    background-color: rgba(0, 0, 0, 0.5);
-    border: 2px dashed var(--cor-ciano);
-    padding: 20px;
-    text-align: center;
-    margin: 20px 0;
-    border-radius: 5px;
-}
-
-.protocol-box p {
-    font-family: var(--fonte-titulo);
-    font-size: 1.8em;
-    color: var(--cor-sucesso);
-    margin: 0;
-}
-
-.chat-float-button {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    background-color: var(--cor-ciano);
-    color: var(--cor-fundo);
-    padding: 15px 20px;
-    border-radius: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    font-family: var(--fonte-titulo);
-    box-shadow: 0 4px 15px rgba(0, 229, 255, 0.4);
-    transition: all 0.3s ease;
-}
-
-.chat-float-button:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(0, 229, 255, 0.6);
-}
-
-.chat-float-button svg {
-    margin-right: 10px;
-}
-
-/* --- Layout Principal (Dashboard, etc.) --- */
-.main-header {
-    background-color: var(--cor-fundo-card);
-    border-bottom: 1px solid var(--cor-borda);
-    padding: 0 40px;
+.portal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: fixed;
+    padding: 20px 5%;
+    background: rgba(10, 10, 26, 0.5);
+    backdrop-filter: blur(5px);
+    border-bottom: 1px solid rgba(0, 229, 255, 0.2);
+    position: sticky;
     top: 0;
-    left: 0;
-    width: 100%;
     z-index: 1000;
-    box-sizing: border-box;
 }
 
-.logo-container span {
+.portal-header .logo {
     font-family: var(--fonte-titulo);
-    font-size: 1.5em;
+    font-size: 1.8em;
+    font-weight: 700;
     color: var(--cor-ciano);
+    text-shadow: 0 0 10px var(--cor-ciano);
 }
 
-.main-header nav a {
-    color: var(--cor-texto);
+.portal-header .logo i {
+    margin-right: 8px;
+}
+
+.portal-header nav a {
+    color: #e0e0e0;
     text-decoration: none;
-    padding: 20px 15px;
-    display: inline-block;
-    transition: background-color 0.3s, color 0.3s;
+    margin-left: 25px;
+    font-size: 1em;
+    font-weight: 500;
+    transition: color 0.3s, text-shadow 0.3s;
 }
 
-.main-header nav a:hover {
-    background-color: var(--cor-ciano);
-    color: var(--cor-fundo);
-}
-
-body > .container {
-    padding-top: 100px; /* Espaço para o header fixo */
-}
-
-/* --- Alertas Flash --- */
-.alert {
-    padding: 15px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-    border: 1px solid transparent;
-}
-.alert-success { background-color: rgba(163, 255, 185, 0.2); border-color: var(--cor-sucesso); color: var(--cor-sucesso); }
-.alert-danger { background-color: rgba(255, 138, 128, 0.2); border-color: var(--cor-perigo); color: var(--cor-perigo); }
-.alert-warning { background-color: rgba(255, 215, 0, 0.2); border-color: var(--cor-aviso); color: var(--cor-aviso); }
-
-/* --- Dashboard e Tabela de Tickets --- */
-.dashboard-container {
-    background-color: var(--cor-fundo-card);
-    padding: 30px;
-    border-radius: 8px;
-    border: 1px solid var(--cor-borda);
-}
-
-.dashboard-container h2 {
-    font-family: var(--fonte-titulo);
+.portal-header nav a:hover {
     color: var(--cor-ciano);
-    border-bottom: 1px solid var(--cor-borda);
-    padding-bottom: 15px;
-    margin-top: 0;
+    text-shadow: 0 0 8px var(--cor-ciano);
 }
 
-.ticket-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+.portal-main {
+    padding: 50px 5%;
+    text-align: center;
 }
 
-.ticket-table th, .ticket-table td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid var(--cor-borda);
-}
-
-.ticket-table th {
+.hero-section h1 {
     font-family: var(--fonte-titulo);
-    color: var(--cor-ciano);
+    font-size: 3.5em;
+    color: #fff;
+    text-shadow: 0 0 15px rgba(0, 229, 255, 0.7);
+    margin-bottom: 10px;
 }
 
-.ticket-table td {
+.hero-section p {
+    font-size: 1.2em;
+    max-width: 600px;
+    margin: 0 auto 50px auto;
     color: var(--cor-texto-secundario);
 }
 
-.ticket-table tr:last-child td {
-    border-bottom: none;
-}
-
-.ticket-table tr:hover td {
-    background-color: rgba(0, 229, 255, 0.05);
-}
-
-.status-badge {
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 0.8em;
-    font-weight: bold;
-    color: var(--cor-fundo);
-}
-.status-aguardando-resposta { background-color: #ffc107; }
-.status-em-andamento { background-color: #17a2b8; }
-.status-aguardando-cliente { background-color: #6c757d; }
-.status-concluído { background-color: #28a745; }
-
-.btn-action {
-    background-color: transparent;
-    border: 1px solid var(--cor-ciano);
-    color: var(--cor-ciano);
-    padding: 8px 12px;
-    border-radius: 5px;
-    text-decoration: none;
-    transition: all 0.3s;
-}
-
-.btn-action:hover {
-    background-color: var(--cor-ciano);
-    color: var(--cor-fundo);
-}
-
-/* --- Detalhes do Ticket --- */
-.ticket-details-grid {
+.action-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 30px;
-    margin-top: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.ticket-info-card, .ticket-actions-card {
-    background-color: var(--cor-fundo-card);
-    padding: 25px;
-    border-radius: 8px;
+.action-card {
+    background: rgba(20, 20, 40, 0.6);
     border: 1px solid var(--cor-borda);
-}
-
-.ticket-info-card h3, .ticket-actions-card h3 {
-    font-family: var(--fonte-titulo);
-    color: var(--cor-ciano);
-    margin-top: 0;
-}
-
-.ticket-actions-card select, .ticket-actions-card textarea {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    background-color: rgba(0, 0, 0, 0.3);
-    border: 1px solid var(--cor-borda);
-    border-radius: 5px;
-    color: var(--cor-texto);
-    box-sizing: border-box;
-}
-
-.btn-chat {
-    display: block;
+    border-radius: 15px;
+    padding: 30px;
     text-align: center;
-    width: 100%;
-    box-sizing: border-box;
-    margin-top: 15px;
-}
-
-/* --- Chat --- */
-.chat-container {
-    width: 100%;
-    max-width: 800px;
-    height: 80vh;
-    background-color: var(--cor-fundo-card);
-    border: 1px solid var(--cor-borda);
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
+    text-decoration: none;
+    color: #e0e0e0;
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    position: relative;
     overflow: hidden;
 }
 
-.chat-header {
-    padding: 15px 20px;
-    border-bottom: 1px solid var(--cor-borda);
+.action-card:before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(0, 229, 255, 0.2), transparent 40%);
+    transform: scale(0);
+    transition: transform 0.5s;
+    z-index: 0;
 }
 
-.chat-header h3 {
-    margin: 0;
-    font-family: var(--fonte-titulo);
+.action-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--cor-ciano);
+    box-shadow: 0 10px 30px rgba(0, 229, 255, 0.2);
+}
+
+.action-card:hover:before {
+    transform: scale(1);
+}
+
+.action-card i, .action-card h2, .action-card p {
+    position: relative;
+    z-index: 1;
+}
+
+.action-card i {
+    font-size: 3em;
     color: var(--cor-ciano);
+    margin-bottom: 20px;
+    text-shadow: 0 0 15px var(--cor-ciano);
 }
 
-.chat-header span {
+.action-card h2 {
+    font-family: var(--fonte-titulo);
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.action-card p {
     font-size: 0.9em;
     color: var(--cor-texto-secundario);
 }
-
-.chat-history {
-    flex-grow: 1;
-    padding: 20px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.chat-input-area {
-    display: flex;
-    padding: 15px;
-    border-top: 1px solid var(--cor-borda);
-}
-
-#message-input {
-    flex-grow: 1;
-    padding: 12px;
-    background-color: rgba(0, 0, 0, 0.3);
-    border: 1px solid var(--cor-borda);
-    border-radius: 20px;
-    color: var(--cor-texto);
-    margin-right: 10px;
-}
-
-#send-button {
-    padding: 12px 20px;
-    background-color: var(--cor-ciano);
-    color: var(--cor-fundo);
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    font-family: var(--fonte-titulo);
-}
-
-.message {
-    padding: 10px 15px;
-    border-radius: 15px;
-    max-width: 70%;
-    line-height: 1.4;
-}
-
-.message strong {
-    display: block;
-    margin-bottom: 5px;
-    font-size: 0.9em;
-    color: var(--cor-ciano);
-}
-
-.message p {
-    margin: 0;
-}
-
-.my-message {
-    background-color: var(--cor-ciano);
-    color: var
