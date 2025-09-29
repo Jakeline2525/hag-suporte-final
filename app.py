@@ -60,9 +60,7 @@ class Ticket(db.Model):
     protocolo = db.Column(db.String(20), unique=True, nullable=False)
     nome_cliente = db.Column(db.String(100), nullable=False)
     email_cliente = db.Column(db.String(100), nullable=False)
-    # --- CORREÇÃO DO ERRO DE DIGITAÇÃO APLICADA AQUI ---
     setor = db.Column(db.String(50))
-    # --- FIM DA CORREÇÃO ---
     funcao = db.Column(db.String(50))
     descricao = db.Column(db.Text, nullable=False)
     status = db.Column(db.String(30), default='Aguardando Resposta')
@@ -189,8 +187,8 @@ def index():
         db.session.add(novo_ticket)
         db.session.commit()
 
-        # Descomente para ativar o envio de e-mail em produção
-        # enviar_email_notificacao(novo_ticket, tipo='abertura')
+        # --- CORREÇÃO: E-MAIL REATIVADO ---
+        enviar_email_notificacao(novo_ticket, tipo='abertura')
         
         return redirect(url_for('ticket_criado', protocolo=protocolo))
         
@@ -273,8 +271,8 @@ def atualizar_ticket(protocolo):
     # Atualiza o status
     if ticket.status != novo_status:
         ticket.status = novo_status
-        # Descomente para ativar o envio de e-mail de atualização
-        # enviar_email_notificacao(ticket, tipo='atualizacao')
+        # --- CORREÇÃO: E-MAIL REATIVADO ---
+        enviar_email_notificacao(ticket, tipo='atualizacao')
         
         # Salva a mudança de status como uma mensagem de sistema no chat
         msg_status = Mensagem(
@@ -336,3 +334,4 @@ def handle_message(data):
 # --- EXECUÇÃO DA APLICAÇÃO ---
 if __name__ == '__main__':
     socketio.run(app, debug=True)
+
